@@ -184,8 +184,15 @@ func FromPackageAttributes(p pkg.Package) []cpe.CPE {
 }
 
 func candidateTargetSw(p pkg.Package) []string {
-	if p.Type == pkg.WordpressPluginPkg {
+	switch p.Type {
+	case pkg.WordpressPluginPkg:
 		return []string{"wordpress"}
+	case pkg.NpmPkg:
+		// NVD qualifies most npm packages with a node.js target software, e.g.
+		// cpe:2.3:a:redis:redis:*:*:*:*:*:node.js:*:* for CVE-2021-29469. The unqualified
+		// variant is kept as well, since not every npm entry in the NVD carries a target
+		// software and dropping it would lose those matches.
+		return []string{cpe.Any, "node.js"}
 	}
 	return []string{cpe.Any}
 }

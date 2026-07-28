@@ -142,6 +142,22 @@ func TestGeneratePackageCPEs(t *testing.T) {
 			},
 		},
 		{
+			// https://github.com/anchore/syft/issues/412 - NVD qualifies npm packages with node.js,
+			// e.g. cpe:2.3:a:redis:redis:*:*:*:*:*:node.js:*:* for CVE-2021-29469
+			name: "npm package gets a node.js target software",
+			p: pkg.Package{
+				Name:     "redis",
+				Version:  "3.1.2",
+				FoundBy:  "some-analyzer",
+				Type:     pkg.NpmPkg,
+				Language: pkg.JavaScript,
+			},
+			expected: []string{
+				"cpe:2.3:a:redis.js:redis:3.1.2:*:*:*:*:*:*:*",
+				"cpe:2.3:a:redis.js:redis:3.1.2:*:*:*:*:node.js:*:*",
+			},
+		},
+		{
 			name: "ruby language",
 			p: pkg.Package{
 				Name:     "name",
